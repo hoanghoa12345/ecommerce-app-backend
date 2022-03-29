@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::with(['category'])->latest()->paginate('50');
+        return Product::with(['category'])->latest()->get();
     }
 
     /**
@@ -49,7 +49,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        return Product::with('category')->findOrFail($product->id);
     }
 
     /**
@@ -61,7 +61,27 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'category_id' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'quantity' => 'required',
+            'image' => 'required'
+        ]);
+
+        $updateProduct = Product::find($product->id);
+        $updateProduct->name = $request->name;
+        $updateProduct->category_id = $request->category_id;
+        $updateProduct->description = $request->description;
+        $updateProduct->price = $request->price;
+        $updateProduct->quantity = $request->quantity;
+        $updateProduct->slug = Str::slug($request->name);
+        if($request->image !=='undefined'){
+            $path = $request->image->store('upload');
+            $updateProduct->image = $path;
+        }
+        return $updateProduct->save();
     }
 
     /**
@@ -72,6 +92,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        return Product::destroy($product->id);
     }
 }
