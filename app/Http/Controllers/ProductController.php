@@ -18,6 +18,21 @@ class ProductController extends Controller
         return Product::with(['category'])->latest()->get();
     }
 
+    public function getTop()
+    {
+        return Product::all()->slice(0, 4);
+    }
+
+    public function findBySlug($slug)
+    {
+        return Product::with(['category'])->where('slug', $slug)->first();
+    }
+
+    public function findByCategory($category)
+    {
+
+    }
+
     /**
      * Store a newly created resource in storage.
      *

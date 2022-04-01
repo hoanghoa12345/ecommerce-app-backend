@@ -24,6 +24,8 @@ Route::prefix('v1')->group(function () {
     });
     // Public route
     Route::get('/products',[ProductController::class,'index']);
+    Route::get('/products/top',[ProductController::class, 'getTop']);
+    Route::get('/product/{slug}',[ProductController::class, 'findBySlug']);
     Route::get('/products/{product}',[ProductController::class,'show']);
     Route::get('/categories',[CategoryController::class,'index']);
 
