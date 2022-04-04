@@ -14,7 +14,20 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return Category::all();
+        return Category::withCount('products')->get();
+    }
+
+    public function getBySlug($slug)
+    {
+        return Category::where('slug',$slug)->first();
+    }
+
+    public function getListProduct($categorySlug) {
+        $category = Category::where('slug', $categorySlug)->first();
+        if($category) {
+            return $category->products;
+        }
+        return null;
     }
 
     /**

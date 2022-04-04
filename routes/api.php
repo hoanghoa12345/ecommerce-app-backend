@@ -28,6 +28,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/product/{slug}',[ProductController::class, 'findBySlug']);
     Route::get('/products/{product}',[ProductController::class,'show']);
     Route::get('/categories',[CategoryController::class,'index']);
+    Route::get('/categories/{slug}',[CategoryController::class,'getBySlug']);
+    Route::get('/category/{categorySlug}',[CategoryController::class,'getListProduct']);
 
     //Auth route
     Route::post('/categories',[CategoryController::class,'store']);

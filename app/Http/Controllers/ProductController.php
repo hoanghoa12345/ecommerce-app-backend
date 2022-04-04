@@ -25,12 +25,13 @@ class ProductController extends Controller
 
     public function findBySlug($slug)
     {
-        return Product::with(['category'])->where('slug', $slug)->first();
-    }
-
-    public function findByCategory($category)
-    {
-
+        $product = Product::with(['category'])->where('slug', $slug)->first();
+        $productsLike = Product::with('category')
+            ->where('category_id', $product->category_id)
+            ->where('slug', '!=', $slug)
+            ->inRandomOrder()->take(4)->get();
+        $product->relatedProduct = $productsLike;
+        return $product;
     }
 
     /**
