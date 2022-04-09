@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,13 +31,19 @@ Route::prefix('v1')->group(function () {
     Route::get('/categories',[CategoryController::class,'index']);
     Route::get('/categories/{slug}',[CategoryController::class,'getBySlug']);
     Route::get('/category/{categorySlug}',[CategoryController::class,'getListProduct']);
-
-    //Auth route
-    Route::post('/categories',[CategoryController::class,'store']);
-    Route::put('/products/{product}',[ProductController::class,'update']);
-    Route::delete('/products/{product}',[ProductController::class,'destroy']);
-    Route::post('/products',[ProductController::class,'store']);
+    Route::post('/register',[AuthController::class,'register']);    
+    Route::post('/login',[AuthController::class,'login']);
+    
+    // Protected route
+    Route::group(['middleware'=>['auth:sanctum']],function(){
+        Route::post('/logout',[AuthController::class,'logout']);
+        Route::post('/categories',[CategoryController::class,'store']);
+        Route::put('/products/{product}',[ProductController::class,'update']);
+        Route::delete('/products/{product}',[ProductController::class,'destroy']);
+        Route::post('/products',[ProductController::class,'store']);
+    });
 });
+
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
