@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SubscriptionDetailController;
 use Illuminate\Http\Request;
@@ -31,24 +32,29 @@ Route::prefix('v1')->group(function () {
     Route::get('/products/{product}',[ProductController::class,'show']);
     Route::get('/categories',[CategoryController::class,'index']);
     Route::get('/categories/{slug}',[CategoryController::class,'getBySlug']);
-
     Route::get('/category/{categorySlug}',[CategoryController::class,'getListProduct']);
     Route::get('/subscriptions', [SubscriptionController::class, 'index']);
     Route::get('/subscriptions/{subscription}', [SubscriptionController::class, 'show']);
-    //Auth user route
-    Route::post('/subscriptions', [SubscriptionController::class, 'store']);
-    Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy']);
-    Route::put('/subscriptions/{subscription}', [SubscriptionController::class, 'update']);
+    //Auth route
+    Route::post('/register',[AuthController::class,'register']);
+    Route::post('/login',[AuthController::class,'login']);
 
-    Route::post('/subscription-details', [SubscriptionDetailController::class, 'store']);
-    Route::put('/subscription-details/{subscriptionDetail}', [SubscriptionDetailController::class, 'update']);
-    Route::delete('/subscription-details', [SubscriptionDetailController::class, 'destroy']);
-    //Auth admin route
-    Route::post('/categories',[CategoryController::class,'store']);
-    Route::put('/products/{product}',[ProductController::class,'update']);
-    Route::delete('/products/{product}',[ProductController::class,'destroy']);
-    Route::post('/products',[ProductController::class,'store']);
+    // Protected route
+    Route::group(['middleware'=>['auth:sanctum']],function(){
+        Route::post('/logout',[AuthController::class,'logout']);
+        Route::post('/categories',[CategoryController::class,'store']);
+        Route::put('/products/{product}',[ProductController::class,'update']);
+        Route::delete('/products/{product}',[ProductController::class,'destroy']);
+        Route::post('/products',[ProductController::class,'store']);
+        Route::post('/subscriptions', [SubscriptionController::class, 'store']);
+        Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy']);
+        Route::put('/subscriptions/{subscription}', [SubscriptionController::class, 'update']);
+        Route::post('/subscription-details', [SubscriptionDetailController::class, 'store']);
+        Route::put('/subscription-details/{subscriptionDetail}', [SubscriptionDetailController::class, 'update']);
+        Route::delete('/subscription-details', [SubscriptionDetailController::class, 'destroy']);
+    });
 });
+
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
