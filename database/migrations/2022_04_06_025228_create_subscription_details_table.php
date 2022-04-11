@@ -17,6 +17,7 @@ class CreateSubscriptionDetailsTable extends Migration
     {
         Schema::create('subscription_details', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Subscription::class);
             $table->foreignIdFor(Product::class)->constrained();
             $table->integer('price')->default(0);
             $table->integer('quantity')->default(0);

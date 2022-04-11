@@ -19,7 +19,6 @@ class CreateSubscriptionsTable extends Migration
             $table->string('name')->nullable();
             $table->integer('duration')->nullable();
             $table->integer('total_price')->default(0);
-            $table->foreignIdFor(SubscriptionDetail::class)->constrained();
             $table->timestamps();
         });
     }
