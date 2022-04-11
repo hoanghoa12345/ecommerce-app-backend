@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,9 +32,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/categories',[CategoryController::class,'index']);
     Route::get('/categories/{slug}',[CategoryController::class,'getBySlug']);
     Route::get('/category/{categorySlug}',[CategoryController::class,'getListProduct']);
-    Route::post('/register',[AuthController::class,'register']);    
+    Route::post('/register',[AuthController::class,'register']);
     Route::post('/login',[AuthController::class,'login']);
-    
+
     // Protected route
     Route::group(['middleware'=>['auth:sanctum']],function(){
         Route::post('/logout',[AuthController::class,'logout']);
@@ -41,6 +42,11 @@ Route::prefix('v1')->group(function () {
         Route::put('/products/{product}',[ProductController::class,'update']);
         Route::delete('/products/{product}',[ProductController::class,'destroy']);
         Route::post('/products',[ProductController::class,'store']);
+        Route::get('/users',[UserController::class,'index']);
+        Route::post('/users',[UserController::class,'store']);
+        Route::get('/users/{id}',[UserController::class,'show']);
+        Route::put('/users/{id}',[UserController::class,'update']);
+        Route::delete('/users/{id}',[UserController::class,'destroy']);
     });
 });
 
