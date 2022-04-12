@@ -32,6 +32,9 @@ class CreateSubscriptionDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('subcription_details');
+        Schema::table('subscription_details', function (Blueprint $table) {
+            $table->dropForeign('subscription_details_product_id_foreign');
+        });
+        Schema::dropIfExists('subscription_details');
     }
 }

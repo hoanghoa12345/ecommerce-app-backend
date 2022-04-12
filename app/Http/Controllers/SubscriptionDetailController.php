@@ -18,6 +18,10 @@ class SubscriptionDetailController extends Controller
         return SubscriptionDetail::create($request->all());
     }
 
+    public function bulkInsert(Request $request) {
+        dd($request->all());
+    }
+
     public function update(Request $request, SubscriptionDetail $subscriptionDetail) {
         $subscriptionDetail = Subscription::find($subscriptionDetail);
         $subscriptionDetail->update($request->all());

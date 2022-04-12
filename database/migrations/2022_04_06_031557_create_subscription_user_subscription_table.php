@@ -17,8 +17,8 @@ class CreateSubscriptionUserSubscriptionTable extends Migration
     {
         Schema::create('subscriptions_user_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Subscription::class)->constrained();
-            $table->foreignIdFor(UserSubscription::class)->constrained();
+            $table->foreignIdFor(Subscription::class);
+            $table->foreignIdFor(UserSubscription::class);
             $table->timestamps();
         });
     }

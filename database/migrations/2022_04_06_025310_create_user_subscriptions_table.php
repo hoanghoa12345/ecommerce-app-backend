@@ -37,6 +37,10 @@ class CreateUserSubscriptionsTable extends Migration
      */
     public function down()
     {
+        Schema::table('user_subscriptions', function (Blueprint $table) {
+            $table->dropForeign('user_subscriptions_subscription_id_foreign');
+            $table->dropForeign('user_subscriptions_user_id_foreign');
+        });
         Schema::dropIfExists('user_subcriptions');
     }
 }
