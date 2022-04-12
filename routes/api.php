@@ -5,7 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SubscriptionDetailController;
-use App\Models\SubscriptionDetail;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +54,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/subscription-details/bulk',[SubscriptionDetailController::class, 'bulkInsert']);
         Route::put('/subscription-details/{subscriptionDetail}', [SubscriptionDetailController::class, 'update']);
         Route::delete('/subscription-details', [SubscriptionDetailController::class, 'destroy']);
+        Route::get('/users',[UserController::class,'index']);
+        Route::post('/users',[UserController::class,'store']);
+        Route::get('/users/{id}',[UserController::class,'show']);
+        Route::put('/users/{id}',[UserController::class,'update']);
+        Route::delete('/users/{id}',[UserController::class,'destroy']);
     });
 });
 
