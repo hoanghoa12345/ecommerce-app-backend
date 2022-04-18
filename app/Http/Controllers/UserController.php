@@ -29,13 +29,15 @@ class UserController extends Controller
         $fields = $request->validate([
             'name'=>'required|string',
             'email' => 'required|string|unique:users,email',
-            'password' => 'required|string|confirmed'
+            'password' => 'required|string|confirmed',
+            'roles' => 'required|string'
         ]);
 
         $user = User::create([
             'name' => $fields['name'],
             'email' => $fields['email'],
-            'password' => bcrypt($fields['password'])
+            'password' => bcrypt($fields['password']),
+            'roles' => $fields['roles'],
         ]);
 
         $response = [
@@ -53,7 +55,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::where('id',$id)->first()->get();
+        $user = User::find($id);
         return $user;
     }
 
@@ -66,10 +68,20 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
-        $user->update($request->all());
+        $request->validate([
+            'name' => 'required',
+            'roles' => 'required',
+        ]);
 
-        return $user;
+        $user = User::find($id);
+        $user->name = $request->name;
+        $user->roles = $request->roles;
+        if($user->save())
+            return response([
+                'message' => 'Updated user successfull.'
+            ],200);
+        return response([
+            'message' => 'User can not updated']);
     }
 
     /**
@@ -81,5 +93,9 @@ class UserController extends Controller
     public function destroy($id)
     {
         return User::destroy($id);
+    }
+
+    public function getUsersProfile(){
+        return User::with(['profile'])->latest()->get();
     }
 }

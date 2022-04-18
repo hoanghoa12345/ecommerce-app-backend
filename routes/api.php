@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SubscriptionDetailController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +60,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/users/{id}',[UserController::class,'show']);
         Route::put('/users/{id}',[UserController::class,'update']);
         Route::delete('/users/{id}',[UserController::class,'destroy']);
+        Route::get('/usersprofile',[UserController::class,'getUsersProfile']);
+        Route::get('/profiles',[ProfileController::class,'index']);
+        Route::get('/profiles/{user_id}',[ProfileController::class,'show']);
+        Route::put('/profiles/{user_id}',[ProfileController::class,'update']);
     });
 });
 
