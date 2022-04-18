@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SubscriptionDetailController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserSubscriptionController;
 use App\Models\UserSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -63,7 +64,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/users/{id}',[UserController::class,'destroy']);
 
         //Register subscription
-        Route::apiResource('/user-subscription', UserSubscription::class);
+        Route::apiResource('/user-subscription', UserSubscriptionController::class);
     });
 });
 
