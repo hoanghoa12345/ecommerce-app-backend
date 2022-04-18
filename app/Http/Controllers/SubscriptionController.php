@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subscription;
-use App\Models\SubscriptionDetail;
-use http\Env\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionController extends Controller
 {
     public function index() {
-        return Subscription::with('details')->latest()->get();
+
+        return Subscription::with(['details' => function($query){
+            $query->with(['product']);
+        }])->latest()->get();
     }
 
     public function store(Request $request) {
@@ -24,7 +26,9 @@ class SubscriptionController extends Controller
     }
 
     public function show(Subscription $subscription) {
-        return Subscription::with('details')->findOrFail($subscription->id);
+        return Subscription::with(['details' => function($query){
+            $query->with(['product']);
+        }])->findOrFail($subscription->id);
     }
 
     public function update(Request $request, Subscription $subscription) {
@@ -47,6 +51,7 @@ class SubscriptionController extends Controller
     }
 
     public function destroy(Subscription $subscription) {
+        DB::table('subscription_details')->where('subscription_id', $subscription->id)->delete();
         return Subscription::destroy($subscription->id);
     }
 }

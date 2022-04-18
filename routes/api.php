@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SubscriptionDetailController;
 use App\Http\Controllers\UserController;
+use App\Models\UserSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,7 @@ Route::prefix('v1')->group(function () {
     // Public route
     Route::get('/products',[ProductController::class,'index']);
     Route::get('/products/top',[ProductController::class, 'getTop']);
+    Route::get('/products/search',[ProductController::class, 'search']);
     Route::get('/product/{slug}',[ProductController::class, 'findBySlug']);
     Route::get('/products/{product}',[ProductController::class,'show']);
     Route::get('/categories',[CategoryController::class,'index']);
@@ -38,7 +40,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/subscriptions/{subscription}', [SubscriptionController::class, 'show']);
     //Auth route
     Route::post('/register',[AuthController::class,'register']);
-    Route::post('/login',[AuthController::class,'login']);
+    Route::post('/login',[AuthController::class,'login'])->name('login');
 
     // Protected route
     Route::group(['middleware'=>['auth:sanctum']],function(){
@@ -59,6 +61,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/users/{id}',[UserController::class,'show']);
         Route::put('/users/{id}',[UserController::class,'update']);
         Route::delete('/users/{id}',[UserController::class,'destroy']);
+
+        //Register subscription
+        Route::apiResource('/user-subscription', UserSubscription::class);
     });
 });
 

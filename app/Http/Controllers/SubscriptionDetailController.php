@@ -19,7 +19,16 @@ class SubscriptionDetailController extends Controller
     }
 
     public function bulkInsert(Request $request) {
-        dd($request->all());
+        $listProduct = $request->all();
+        $totalPrice = 0;
+        foreach ($listProduct as $item) {
+            $totalPrice += $item['quantity'] * $item['price'];
+            SubscriptionDetail::create($item);
+        }
+        $subscription = Subscription::find($listProduct[0]['subscription_id']);
+        $subscription->total_price = $totalPrice;
+        $subscription->save();
+        return response('1',201);
     }
 
     public function update(Request $request, SubscriptionDetail $subscriptionDetail) {
