@@ -14,9 +14,12 @@ class CreateSubscriptionDeliveriesTable extends Migration
      */
     public function up()
     {
+        if(!Schema::hasTable('subscription_deliveries'))
         Schema::create('subscription_deliveries', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(UserSubscription::class)->constrained();
+            $table->foreignIdFor(UserSubscription::class)->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');;
             $table->dateTime('delivery_at')->nullable();
             $table->enum('status',['success','failed', 'pending'])->default('pending');
             $table->timestamps();
@@ -30,6 +33,6 @@ class CreateSubscriptionDeliveriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('subcription_deliveries');
+        Schema::dropIfExists('subscription_deliveries');
     }
 }

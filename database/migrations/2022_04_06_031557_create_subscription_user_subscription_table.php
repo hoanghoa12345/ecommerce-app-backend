@@ -15,10 +15,15 @@ class CreateSubscriptionUserSubscriptionTable extends Migration
      */
     public function up()
     {
+        if(!Schema::hasTable('subscriptions_user_subscriptions'))
         Schema::create('subscriptions_user_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Subscription::class);
-            $table->foreignIdFor(UserSubscription::class);
+            $table->foreignIdFor(Subscription::class)->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');;
+            $table->foreignIdFor(UserSubscription::class)->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');;
             $table->timestamps();
         });
     }

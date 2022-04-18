@@ -67,6 +67,10 @@ class UserSubscriptionController extends Controller
      */
     public function destroy($id)
     {
-        UserSubscription::destroy($id);
+        if(UserSubscription::destroy($id)){
+            return response(["message" => "Success delete user subscription!"], 200);
+        } else {
+            return response(["message" => "Failed to delete user subscription"], 200);
+        }
     }
 }
