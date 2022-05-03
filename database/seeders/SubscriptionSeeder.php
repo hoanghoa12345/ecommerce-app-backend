@@ -17,15 +17,18 @@ class SubscriptionSeeder extends Seeder
         DB::table('subscriptions')->insert([[
             'name' => 'Gói sản phẩm 1',
             'duration' => 4,
-            'total_price' => 0
+            'total_price' => 0,
+            'user_id' => 1
         ], [
             'name' => 'Gói sản phẩm 2',
             'duration' => 2,
-            'total_price' => 0
+            'total_price' => 0,
+            'user_id' => 1
         ], [
             'name' => 'Gói sản phẩm 3',
-            'duration' => 6,
-            'total_price' => 0
+            'duration' => 3,
+            'total_price' => 0,
+            'user_id' => 1
         ]]);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\SubscriptionDetail;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,6 +20,7 @@ class CreateSubscriptionsTable extends Migration
             $table->string('name')->nullable();
             $table->integer('duration')->nullable();
             $table->integer('total_price')->default(0);
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

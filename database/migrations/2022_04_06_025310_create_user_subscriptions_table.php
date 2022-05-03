@@ -29,7 +29,7 @@ class CreateUserSubscriptionsTable extends Migration
             $table->date('end_date')->nullable();
             $table->string('payment_status')->nullable();
             $table->time('delivery_schedule')->nullable();
-            $table->foreignIdFor(SubscriptionDelivery::class);
+//            $table->foreignIdFor(SubscriptionDelivery::class);
             $table->timestamps();
         });
     }

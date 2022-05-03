@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subscription;
+use App\Models\SubscriptionDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,8 +22,15 @@ class SubscriptionController extends Controller
            'duration' => 'required',
            'total_price' => 'required'
         ]);
+        $subscription = new Subscription();
+        $subscription->name = $request->name;
+        $subscription->duration = $request->duration;
+        $subscription->total_price = $request->total_price;
+        $subscription->user_id = auth()->user()->id;
 
-        return Subscription::create($request->all());
+        if($subscription->save())
+            return response($subscription,201);
+        return response(['message' => 'Failed to save subscription'], 500);
     }
 
     public function show(Subscription $subscription) {
@@ -51,7 +59,10 @@ class SubscriptionController extends Controller
     }
 
     public function destroy(Subscription $subscription) {
-        DB::table('subscription_details')->where('subscription_id', $subscription->id)->delete();
+        if (SubscriptionDetail::where('subscription_id', '=', $subscription->id)->count() > 0) {
+            DB::table('subscription_details')->where('subscription_id', $subscription->id)->delete();
+        }
+
         return Subscription::destroy($subscription->id);
     }
 }
