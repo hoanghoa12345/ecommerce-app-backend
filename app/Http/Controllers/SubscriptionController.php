@@ -4,14 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Subscription;
 use App\Models\SubscriptionDetail;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SubscriptionController extends Controller
 {
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * Listing all subscriptions
+     */
     public function index() {
 
         return Subscription::with(['details' => function($query){
+            $query->with(['product']);
+        }])->latest()->get();
+    }
+
+    //Find subscription create by admin
+    public function getSubByAdmin() {
+        //get all user with roles `admin`
+        $users = User::all()->where('roles','admin')->pluck('id');
+        return Subscription::whereIn('user_id', $users)->with(['details' => function($query){
             $query->with(['product']);
         }])->latest()->get();
     }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubscriptionController;
@@ -57,6 +58,7 @@ Route::prefix('v1')->group(function () {
 
         //Subscription
         Route::post('/subscriptions', [SubscriptionController::class, 'store']);
+        Route::get('/subscriptions-by-admin', [SubscriptionController::class, 'getSubByAdmin']);
         Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy']);
         Route::put('/subscriptions/{subscription}', [SubscriptionController::class, 'update']);
         Route::post('/subscription-details', [SubscriptionDetailController::class, 'store']);
@@ -81,6 +83,7 @@ Route::prefix('v1')->group(function () {
         //Subscription create by user
         Route::post('/subscription-users', [SubscriptionsUserController::class,'store']);
         Route::get('/subscription-users/{user}', [SubscriptionsUserController::class, 'byUser']);
+        Route::get('/admin/dashboard', [DashboardController::class, 'index']);
     });
 });
 
