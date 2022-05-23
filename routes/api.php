@@ -32,6 +32,8 @@ Route::prefix('v1')->group(function () {
         ],200);
     });
     // Public route
+    Route::get('/home/categories',[DashboardController::class,'getCategoryHome']);
+    Route::get('/home/sliders/banners',[DashboardController::class,'getSliderBanner']);
     Route::get('/products',[ProductController::class,'index']);
     Route::get('/products/top',[ProductController::class, 'getTop']);
     Route::get('/products/search',[ProductController::class, 'search']);
@@ -42,6 +44,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/category/{categorySlug}',[CategoryController::class,'getListProduct']);
     Route::get('/subscriptions', [SubscriptionController::class, 'index']);
     Route::get('/subscriptions/{subscription}', [SubscriptionController::class, 'show']);
+    Route::get('/subscriptions-by-admin', [SubscriptionController::class, 'getSubByAdmin']);
     //Auth route
     Route::post('/register',[AuthController::class,'register']);
     Route::post('/login',[AuthController::class,'login'])->name('login');
@@ -58,7 +61,6 @@ Route::prefix('v1')->group(function () {
 
         //Subscription
         Route::post('/subscriptions', [SubscriptionController::class, 'store']);
-        Route::get('/subscriptions-by-admin', [SubscriptionController::class, 'getSubByAdmin']);
         Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy']);
         Route::put('/subscriptions/{subscription}', [SubscriptionController::class, 'update']);
         Route::post('/subscription-details', [SubscriptionDetailController::class, 'store']);
