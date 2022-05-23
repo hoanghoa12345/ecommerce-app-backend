@@ -18,7 +18,7 @@ class SubscriptionController extends Controller
 
         return Subscription::with(['details' => function($query){
             $query->with(['product']);
-        }])->latest()->get();
+        },'user'])->latest()->get();
     }
 
     //Find subscription create by admin
