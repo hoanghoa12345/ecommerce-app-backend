@@ -25,4 +25,9 @@ class UserSubscription extends Model
     {
         return $this->hasMany(SubscriptionDelivery::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

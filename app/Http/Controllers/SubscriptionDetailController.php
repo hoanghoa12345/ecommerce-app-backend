@@ -37,7 +37,8 @@ class SubscriptionDetailController extends Controller
         return $subscriptionDetail;
     }
 
-    public function destroy(SubscriptionDetail  $subscriptionDetail) {
-        return SubscriptionDetail::destroy($subscriptionDetail);
+    public function destroy($id)
+    {
+        return SubscriptionDetail::destroy($id);
     }
 }

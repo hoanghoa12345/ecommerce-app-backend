@@ -14,7 +14,7 @@ class UserSubscriptionController extends Controller
      */
     public function index()
     {
-        return UserSubscription::all();
+        return UserSubscription::with(['user'])->latest()->get();
     }
 
     /**

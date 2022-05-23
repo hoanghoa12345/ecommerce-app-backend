@@ -79,8 +79,4 @@ class SubscriptionController extends Controller
 
         return Subscription::destroy($subscription->id);
     }
-
-    //handle user edit subscription
-
-    //
 }

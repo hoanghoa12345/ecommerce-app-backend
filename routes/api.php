@@ -66,7 +66,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/subscription-details', [SubscriptionDetailController::class, 'store']);
         Route::post('/subscription-details/bulk',[SubscriptionDetailController::class, 'bulkInsert']);
         Route::put('/subscription-details/{subscriptionDetail}', [SubscriptionDetailController::class, 'update']);
-        Route::delete('/subscription-details', [SubscriptionDetailController::class, 'destroy']);
+        Route::delete('/subscription-details/{id}', [SubscriptionDetailController::class, 'destroy']);
 
         //Profile user
         Route::get('/users',[UserController::class,'index']);
@@ -83,6 +83,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('/user-subscription', UserSubscriptionController::class);
 
         //Subscription create by user
+        Route::get('/user-subscriptions', [UserSubscriptionController::class,'index']);
         Route::post('/subscription-users', [SubscriptionsUserController::class,'store']);
         Route::get('/subscription-users/{user}', [SubscriptionsUserController::class, 'byUser']);
         Route::get('/admin/dashboard', [DashboardController::class, 'index']);
