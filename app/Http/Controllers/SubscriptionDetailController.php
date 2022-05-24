@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Subscription;
 use App\Models\SubscriptionDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionDetailController extends Controller
 {
@@ -20,6 +21,8 @@ class SubscriptionDetailController extends Controller
 
     public function bulkInsert(Request $request) {
         $listProduct = $request->all();
+        //Handle delete old items when update
+        DB::table('subscription_details')->where('subscription_id', $listProduct[0]['subscription_id'])->delete();
         $totalPrice = 0;
         foreach ($listProduct as $item) {
             $totalPrice += $item['quantity'] * $item['price'];
@@ -37,8 +40,15 @@ class SubscriptionDetailController extends Controller
         return $subscriptionDetail;
     }
 
-    public function destroy($id)
+    public function destroy($id): int
     {
         return SubscriptionDetail::destroy($id);
+    }
+
+    public function updateList(Request $request, $subscriptionId)
+    {
+        //$subscriptionDetailsCount = SubscriptionDetail::where('subscription_id',$subscriptionId)->count();
+        //$deleted = DB::table('subscription_details')->where('subscription_id', $subscriptionId)->delete();
+        //Deleted id always return num of record deleted
     }
 }
