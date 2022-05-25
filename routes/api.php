@@ -44,6 +44,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/category/{categorySlug}',[CategoryController::class,'getListProduct']);
     Route::get('/subscriptions', [SubscriptionController::class, 'index']);
     Route::get('/subscriptions/{subscription}', [SubscriptionController::class, 'show']);
+    Route::get('/subscriptions-by-user/{userId}', [SubscriptionController::class, 'getSubsByUserId']);
     Route::get('/subscriptions-by-admin', [SubscriptionController::class, 'getSubByAdmin']);
     //Auth route
     Route::post('/register',[AuthController::class,'register']);
@@ -85,7 +86,8 @@ Route::prefix('v1')->group(function () {
         //Subscription create by user
         Route::get('/user-subscriptions', [UserSubscriptionController::class,'index']);
         Route::post('/subscription-users', [SubscriptionsUserController::class,'store']);
-        Route::get('/subscription-users/{user}', [SubscriptionsUserController::class, 'byUser']);
+        Route::get('/subscriptions-user/{userId}', [UserSubscriptionController::class,'getUserSubsByUserId']);
+
         Route::get('/admin/dashboard', [DashboardController::class, 'index']);
     });
 });
