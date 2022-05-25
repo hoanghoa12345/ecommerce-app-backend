@@ -23,4 +23,8 @@ class Subscription extends Model
     {
         return $this->belongsTo(User::class)->select(['id','name']);
     }
+
+    public function userSubs() {
+        return $this->hasMany(UserSubscription::class);
+    }
 }

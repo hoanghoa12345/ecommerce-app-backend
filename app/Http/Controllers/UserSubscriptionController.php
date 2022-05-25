@@ -40,8 +40,8 @@ class UserSubscriptionController extends Controller
         $userSubscription->end_date = $request->end_date;
         $userSubscription->payment_status = $request->payment_status;
         $userSubscription->delivery_schedule = $request->delivery_schedule;
-        if($userSubscription->save())
-            return response(['message'=>'Save subscription success'],201);
+        if ($userSubscription->save())
+            return response(['message' => 'Save subscription success'], 201);
         return response(['message' => 'Failed to save subscription'], 500);
     }
 
@@ -89,5 +89,10 @@ class UserSubscriptionController extends Controller
         } else {
             return response(["message" => "Failed to delete user subscription"], 200);
         }
+    }
+
+    public function getUserSubsByUserId($id)
+    {
+        return UserSubscription::where('user_id', $id)->with('subscription')->latest()->get();
     }
 }

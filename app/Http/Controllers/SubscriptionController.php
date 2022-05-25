@@ -79,4 +79,8 @@ class SubscriptionController extends Controller
 
         return Subscription::destroy($subscription->id);
     }
+
+    public function getSubsByUserId($id) {
+        return Subscription::where('user_id', $id)->latest()->get();
+    }
 }
