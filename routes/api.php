@@ -46,6 +46,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/subscriptions/{subscription}', [SubscriptionController::class, 'show']);
     Route::get('/subscriptions-by-user/{userId}', [SubscriptionController::class, 'getSubsByUserId']);
     Route::get('/subscriptions-by-admin', [SubscriptionController::class, 'getSubByAdmin']);
+    Route::get('/subscription-details', [SubscriptionDetailController::class, 'index']);
     //Auth route
     Route::post('/register',[AuthController::class,'register']);
     Route::post('/login',[AuthController::class,'login'])->name('login');

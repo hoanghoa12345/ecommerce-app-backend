@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\DB;
 
 class SubscriptionDetailController extends Controller
 {
+    public function index()
+    {
+        $SubsDetail = SubscriptionDetail::all();
+        return $SubsDetail;
+    }
+
     public function store(Request $request) {
         $request->validate([
             'subscription_id' => 'required',
