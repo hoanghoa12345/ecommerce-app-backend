@@ -10,6 +10,7 @@ use App\Http\Controllers\SubscriptionsUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserSubscriptionController;
 use App\Models\UserSubscription;
+use \App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -91,6 +92,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/subscriptions-user/{userId}', [UserSubscriptionController::class,'getUserSubsByUserId']);
 
         Route::get('/admin/dashboard', [DashboardController::class, 'index']);
+
+        //Order
+        Route::get('/orders', [OrderController::class, 'index']);
+        Route::post('/orders', [OrderController::class, 'store']);
     });
 });
 
