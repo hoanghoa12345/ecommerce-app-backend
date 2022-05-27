@@ -83,4 +83,38 @@ class SubscriptionController extends Controller
     public function getSubsByUserId($id) {
         return Subscription::where('user_id', $id)->latest()->get();
     }
+
+    public function copySubscription(Request $request) {
+        $user_id = $request->input('user_id');
+        $subscription_name = $request->input('subscription_name');
+        $subscription_duration = $request->input('subscription_duration');
+        $subscription = Subscription::create([
+            'name' => $subscription_name,
+            'duration' => $subscription_duration,
+            'total_price' => 0,
+            'user_id' => $user_id
+        ]);
+
+        $subscription_detail = $request->input('subscription_detail');
+
+        $totalPrice = 0;
+        foreach ($subscription_detail as $item) {
+            $totalPrice += $item['quantity'] * $item['price'];
+            SubscriptionDetail::create([
+                'subscription_id' => $subscription->id,
+                'product_id' => $item['product_id'],
+                'price' => $item['price'],
+                'quantity' => $item['quantity']
+            ]);
+        }
+
+        $subscription->total_price = $totalPrice;
+        $subscription->save();
+
+        return response([
+            'status'=> 201,
+            'subscription_id' => $subscription->id,
+            'message'=>'Copy subscription successful'
+        ], 201);
+    }
 }

@@ -69,6 +69,7 @@ Route::prefix('v1')->group(function () {
         Route::put('/subscription-details/{subscriptionDetail}', [SubscriptionDetailController::class, 'update']);
         Route::delete('/subscription-details/{id}', [SubscriptionDetailController::class, 'destroy']);
         Route::post('/subscription-details/update/{subscriptionId}',[SubscriptionDetailController::class,'updateList']);
+        Route::post('/subscriptions/copy-new-subscription',[SubscriptionController::class,'copySubscription']);
 
         //Profile user
         Route::get('/users',[UserController::class,'index']);

@@ -12,7 +12,8 @@ class Subscription extends Model
     protected $fillable = [
         'name',
         'duration',
-        'total_price'
+        'total_price',
+        'user_id'
     ];
 
     public function details() {
