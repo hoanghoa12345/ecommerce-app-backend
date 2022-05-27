@@ -81,6 +81,13 @@ class SubscriptionController extends Controller
     }
 
     public function getSubsByUserId($id) {
-        return Subscription::where('user_id', $id)->latest()->get();
+        $que = DB::table('subscriptions')->leftJoin('user_subscriptions', 'subscriptions.id', '=', 'user_subscriptions.subscription_id')
+            ->select('subscriptions.id', 'subscriptions.name', 'subscriptions.duration', 'subscriptions.total_price', 'subscriptions.user_id', 'subscriptions.created_at', 'subscriptions.updated_at', 'user_subscriptions.status')
+            ->where('subscriptions.user_id','=' ,$id)
+            ->orderby('subscriptions.id','DESC')
+            ->get();
+
+        return $que;
+//        return Subscription::where('user_id', $id)->latest()->get();
     }
 }
