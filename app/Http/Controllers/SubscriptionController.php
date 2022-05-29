@@ -14,27 +14,30 @@ class SubscriptionController extends Controller
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      * Listing all subscriptions
      */
-    public function index() {
+    public function index()
+    {
 
-        return Subscription::with(['details' => function($query){
+        return Subscription::with(['details' => function ($query) {
             $query->with(['product']);
-        },'user'])->latest()->get();
+        }, 'user'])->latest()->get();
     }
 
     //Find subscription create by admin
-    public function getSubByAdmin() {
+    public function getSubByAdmin()
+    {
         //get all user with roles `admin`
-        $users = User::all()->where('roles','admin')->pluck('id');
-        return Subscription::whereIn('user_id', $users)->with(['details' => function($query){
+        $users = User::all()->where('roles', 'admin')->pluck('id');
+        return Subscription::whereIn('user_id', $users)->with(['details' => function ($query) {
             $query->with(['product']);
         }])->latest()->get();
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $request->validate([
-           'name' => 'required',
-           'duration' => 'required',
-           'total_price' => 'required'
+            'name' => 'required',
+            'duration' => 'required',
+            'total_price' => 'required'
         ]);
         $subscription = new Subscription();
         $subscription->name = $request->name;
@@ -42,18 +45,20 @@ class SubscriptionController extends Controller
         $subscription->total_price = $request->total_price;
         $subscription->user_id = auth()->user()->id;
 
-        if($subscription->save())
-            return response($subscription,201);
+        if ($subscription->save())
+            return response($subscription, 201);
         return response(['message' => 'Failed to save subscription'], 500);
     }
 
-    public function show(Subscription $subscription) {
-        return Subscription::with(['details' => function($query){
+    public function show(Subscription $subscription)
+    {
+        return Subscription::with(['details' => function ($query) {
             $query->with(['product']);
         }])->findOrFail($subscription->id);
     }
 
-    public function update(Request $request, Subscription $subscription) {
+    public function update(Request $request, Subscription $subscription)
+    {
         $request->validate([
             'name' => 'required',
             'duration' => 'required',
@@ -64,15 +69,16 @@ class SubscriptionController extends Controller
         $subscription->name = $request->name;
         $subscription->duration = $request->duration;
         $subscription->total_price = $request->total_price;
-        if($subscription->save())
+        if ($subscription->save())
             return \response([
                 'message' => 'Updated Subscription'
-            ],200);
+            ], 200);
         return \response([
             'message' => 'Subscription can not updated']);
     }
 
-    public function destroy(Subscription $subscription) {
+    public function destroy(Subscription $subscription)
+    {
         if (SubscriptionDetail::where('subscription_id', '=', $subscription->id)->count() > 0) {
             DB::table('subscription_details')->where('subscription_id', $subscription->id)->delete();
         }
@@ -80,11 +86,13 @@ class SubscriptionController extends Controller
         return Subscription::destroy($subscription->id);
     }
 
-    public function getSubsByUserId($id) {
+    public function getSubsByUserId($id)
+    {
         return Subscription::where('user_id', $id)->latest()->get();
     }
 
-    public function copySubscription(Request $request) {
+    public function copySubscription(Request $request)
+    {
         $user_id = $request->input('user_id');
         $subscription_name = $request->input('subscription_name');
         $subscription_duration = $request->input('subscription_duration');
@@ -112,9 +120,9 @@ class SubscriptionController extends Controller
         $subscription->save();
 
         return response([
-            'status'=> 201,
+            'status' => 201,
             'subscription_id' => $subscription->id,
-            'message'=>'Copy subscription successful'
+            'message' => 'Copy subscription successful'
         ], 201);
     }
 }

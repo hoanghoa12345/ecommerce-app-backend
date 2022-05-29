@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubscriptionController;
@@ -91,6 +92,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/subscriptions-user/{userId}', [UserSubscriptionController::class,'getUserSubsByUserId']);
 
         Route::get('/admin/dashboard', [DashboardController::class, 'index']);
+
+        //Order
+        Route::post('/order', [OrderController::class, 'save']);
+        Route::get('/orders', [OrderController::class, 'list']);
+        Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
     });
 });
 
