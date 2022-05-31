@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\Profile;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -28,10 +30,17 @@ class DashboardController extends Controller
             return $user;
         });
 
+        //Get account balance
+        $account_balance = Order::whereMonth('created_at', Carbon::now()->month)->sum('total_price');
+
+
+        //Get orders
+        $new_sales = Order::whereMonth('created_at', Carbon::now()->month)->count();
+
         return response([
             'total_client' => $total_client,
-            'account_balance' => 0,
-            'new_sales' => 0,
+            'account_balance' => $account_balance,
+            'new_sales' => $new_sales,
             'pending_contacts' => 0,
             'clients' => $users
         ]);
