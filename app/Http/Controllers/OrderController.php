@@ -62,4 +62,14 @@ class OrderController extends Controller
             return response(['message' => 'Has error when delete order'], 500);
         }
     }
+
+    public function update($id, Request $request)
+    {
+        $order = Order::find($id);
+        $order->status = $request->input('status');
+        $order->save();
+        logger('id: '.$id,['Order']);
+        logger('status input: '.$request->input('status'), ['Order']);
+        return response(['message' => 'Update status order to ' . $order->status . ' successful!'],200);
+    }
 }

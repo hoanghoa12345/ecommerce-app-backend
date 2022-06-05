@@ -97,6 +97,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/order', [OrderController::class, 'save']);
         Route::get('/orders', [OrderController::class, 'list']);
         Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+        Route::put('/orders/{id}', [OrderController::class, 'update']);
     });
 });
 
