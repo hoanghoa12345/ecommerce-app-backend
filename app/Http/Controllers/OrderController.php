@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderDetailMail;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
@@ -20,7 +23,6 @@ class OrderController extends Controller
             'address' => $request->input('address'),
             'phone_number' => $request->input('phone_number'),
         ]);
-
         $order_detail = $request->input('order_detail');
         foreach ($order_detail as $item) {
             OrderDetail::create([
@@ -30,6 +32,11 @@ class OrderController extends Controller
                 'price' => $item['price']
             ]);
         }
+
+        $user = User::find($order->user_id);
+        $order_list = OrderDetail::with('product')->where('order_id', $order->id)->get();
+
+        Mail::to($user)->send(new OrderDetailMail($user, $order, $order_list));
 
         return response([
             'status' => 201,

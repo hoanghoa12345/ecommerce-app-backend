@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SubscribeMail;
+use App\Models\Profile;
+use App\Models\Subscription;
+use App\Models\User;
 use App\Models\UserSubscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class UserSubscriptionController extends Controller
 {
@@ -40,8 +45,16 @@ class UserSubscriptionController extends Controller
         $userSubscription->end_date = $request->end_date;
         $userSubscription->payment_status = $request->payment_status;
         $userSubscription->delivery_schedule = $request->delivery_schedule;
-        if ($userSubscription->save())
+
+        if ($userSubscription->save()) {
+            $user = User::find($userSubscription->user_id);
+            $profile = Profile::find($userSubscription->user_id);
+            $subscription = Subscription::find($userSubscription->subscription_id);
+
+            Mail::to($user)->send(new SubscribeMail($user, $profile, $userSubscription, $subscription));
             return response(['message' => 'Save subscription success'], 201);
+        }
+
         return response(['message' => 'Failed to save subscription'], 500);
     }
 
