@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
@@ -50,6 +51,8 @@ Route::prefix('v1')->group(function () {
     //Auth route
     Route::post('/register',[AuthController::class,'register']);
     Route::post('/login',[AuthController::class,'login'])->name('login');
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
     // Protected route
     Route::group(['middleware'=>['auth:sanctum']],function(){
@@ -98,6 +101,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/orders', [OrderController::class, 'list']);
         Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
         Route::put('/orders/{id}', [OrderController::class, 'update']);
+
+        //Favorites
+        Route::get('/favorites/{userId}', [FavoriteController::class, 'index']);
+        Route::post('/favorites', [FavoriteController::class, 'save']);
+        Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy']);
     });
 });
 
