@@ -53,6 +53,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/login',[AuthController::class,'login'])->name('login');
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/zalopay/payment', [UserSubscriptionController::class, 'zalopayPayment']);
+    Route::get('/zalopay/bank-list', [UserSubscriptionController::class, 'zalopayBankList']);
+    Route::get('/zalopay/status', [UserSubscriptionController::class, 'zalopayStatusPayment']);
+    Route::put('/payment-status',[UserSubscriptionController::class, 'updatePaymentStatus']);
 
     // Protected route
     Route::group(['middleware'=>['auth:sanctum']],function(){

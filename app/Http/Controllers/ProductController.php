@@ -93,7 +93,7 @@ class ProductController extends Controller
         $updateProduct->price = $request->price;
         $updateProduct->quantity = $request->quantity;
         $updateProduct->slug = Str::slug($request->name);
-        if($request->image !=='undefined'){
+        if($request->hasFile('image')){
             $path = $request->image->store('upload');
             $updateProduct->image = $path;
         }

@@ -27,11 +27,11 @@ class FavoriteController extends Controller
         $favorites = Favorite::where('user_id', $user_id);
 
         //user id and product id is same
-        if($favorites->where('product_id', $product_id)->count() > 0) {
+        if($product_id && $favorites->where('product_id', $product_id)->count() > 0) {
             return response(['message' => 'Product has been added!'],200);
         }
 
-        if($favorites->where('subscription_id', $subscription_id)->count() > 0) {
+        if($subscription_id && $favorites->where('subscription_id', $subscription_id)->count() > 0) {
             return response(['message' => 'Subscription has been added!'],200);
         }
 
