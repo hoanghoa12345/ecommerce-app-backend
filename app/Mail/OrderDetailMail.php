@@ -27,12 +27,13 @@ class OrderDetailMail extends Mailable
     }
 
     /**
-     * Build the message.
+     * Build the message with subject.
      *
      * @return $this
      */
     public function build()
     {
-        return $this->subject("eClean Store - Thông tin đơn hàng")->view('emails.orders');
+        $app_name = env('APP_NAME', 'Eclean Store');
+        return $this->subject($app_name . " - Thông tin đơn hàng")->view('emails.orders');
     }
 }

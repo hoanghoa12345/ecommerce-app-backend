@@ -17,6 +17,7 @@ Route::get('/', function () {
     return view('app');
 });
 
+// Forward all request to route "/"
 Route::get('{all}', function () {
     return view('app');
 })->where('all', '^(?!api).*$');

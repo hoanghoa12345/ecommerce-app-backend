@@ -27,7 +27,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'name'=>'required|string',
+            'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
             'roles' => 'required|string'
@@ -44,7 +44,7 @@ class UserController extends Controller
             'user' => $user,
         ];
 
-        return Response($response,201);
+        return Response($response, 201);
     }
 
     /**
@@ -76,12 +76,13 @@ class UserController extends Controller
         $user = User::find($id);
         $user->name = $request->name;
         $user->roles = $request->roles;
-        if($user->save())
+        if ($user->save())
             return response([
                 'message' => 'Updated user successfull.'
-            ],200);
+            ], 200);
         return response([
-            'message' => 'User can not updated']);
+            'message' => 'User can not updated'
+        ]);
     }
 
     /**
@@ -95,7 +96,11 @@ class UserController extends Controller
         return User::destroy($id);
     }
 
-    public function getUsersProfile(){
+    /**
+     * Get current logged in user
+     */
+    public function getUsersProfile()
+    {
         return User::with(['profile'])->latest()->get();
     }
 }

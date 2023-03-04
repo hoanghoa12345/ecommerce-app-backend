@@ -12,19 +12,17 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function register(Request $request){
+
+    /**
+     * Handle register user
+     */
+    public function register(Request $request)
+    {
         $fields = $request->validate([
-            'name'=>'required|string',
+            'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed'
         ]);
-
-//        $isUser = User::where('email', $fields['email'])->first();
-//        if (!$isUser){
-//            return [
-//                'message' => 'Email already exists.'
-//            ];
-//        }
 
         $user = User::create([
             'name' => $fields['name'],
@@ -36,22 +34,25 @@ class AuthController extends Controller
             'user' => $user,
         ];
 
-        return Response($response,201);
+        return Response($response, 201);
     }
 
-    public function login(Request $request){
+    /**
+     * Handle login with email and password
+     */
+    public function login(Request $request)
+    {
         $fields = $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string'
         ]);
         $user = User::where('email', $fields['email'])->first();
 
-        if (!$user){
+        if (!$user) {
             return [
                 'message' => 'The email you entered is not connected to any account.'
             ];
-        }
-        elseif (!Hash::check($fields['password'], $user->password)){
+        } elseif (!Hash::check($fields['password'], $user->password)) {
             return [
                 'message' => 'The password you entered is incorrect.'
             ];
@@ -64,18 +65,28 @@ class AuthController extends Controller
             'token' => $token,
         ];
 
-        return Response($response,201);
+        return Response($response, 201);
     }
 
-    public function logout(){
+    /**
+     * Handle logout user
+     */
+    public function logout()
+    {
         auth()->user()->tokens()->delete();
 
         return [
-            'message' => 'logged out'
+            'message' => 'Logged out',
+            'status' => 1,
+            'error_code' => 0
         ];
     }
 
-    public function forgotPassword(Request $request) {
+    /**
+     * Handle forgot password and send link reset password to email
+     */
+    public function forgotPassword(Request $request)
+    {
         $request->validate(['email' => 'required|email']);
 
         $status = Password::sendResetLink(
@@ -87,7 +98,11 @@ class AuthController extends Controller
             : response(['message' => 'An error occurred while sending the email!'], 500);
     }
 
-    public function resetPassword(Request $request) {
+    /**
+     * Handle reset password with token sent by email
+     */
+    public function resetPassword(Request $request)
+    {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
@@ -108,8 +123,7 @@ class AuthController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? \response(['message' => 'Password recovery successful!'], 200)
-            : \response(['message' => 'An error occurred while recovering the password'], 500);
-
+            ? \response(['message' => 'Password recovery successful!', 'status' => 1, 'error_code' => 0], 200)
+            : \response(['message' => 'An error occurred while recovering the password', 'status' => 0, 'error_code' => 1], 500);
     }
 }

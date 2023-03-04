@@ -6,7 +6,9 @@ use App\Models\Subscription;
 use App\Models\SubscriptionDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionController extends Controller
 {
@@ -22,14 +24,23 @@ class SubscriptionController extends Controller
         }, 'user'])->latest()->get();
     }
 
-    //Find subscription create by admin
+    /**
+     * Find subscription create by admin
+     */
     public function getSubByAdmin()
     {
         //get all user with roles `admin`
         $users = User::all()->where('roles', 'admin')->pluck('id');
-        return Subscription::whereIn('user_id', $users)->with(['details' => function ($query) {
+        $query = Subscription::has('details', '>=', 1)->whereIn('user_id', $users)->with(['details' => function ($query) {
             $query->with(['product']);
-        }])->latest()->get();
+        }])->latest();
+        Log::debug($query->toSql());
+        return [
+            'data' => $query->get(),
+            'error_code' => 0,
+            'message' => 'Successful',
+            'status' => 1
+        ];
     }
 
     public function store(Request $request)
@@ -74,7 +85,8 @@ class SubscriptionController extends Controller
                 'message' => 'Updated Subscription'
             ], 200);
         return \response([
-            'message' => 'Subscription can not updated']);
+            'message' => 'Subscription can not updated'
+        ]);
     }
 
     public function destroy(Subscription $subscription)
