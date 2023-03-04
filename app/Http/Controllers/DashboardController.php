@@ -9,6 +9,9 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+    /**
+     * Load collection info in dashboard
+     */
     public function index()
     {
         //Get total clients
@@ -40,12 +43,18 @@ class DashboardController extends Controller
             'total_client' => $total_client,
             'account_balance' => $account_balance,
             'new_sales' => $new_sales,
-            'pending_contacts' => 0,
+            'pending_contacts' => 0, // It's hard code number and will be change
             'clients' => $users
         ]);
     }
 
-    public function getSliderBanner() {
+    /**
+     * Get list banner image in home page
+     * It will be change with database storage image
+     */
+
+    public function getSliderBanner()
+    {
         $banners = collect([
             "https://www.bigc.vn/files/banners/2022/mar/blog-website-c-1.jpg",
             "https://www.bigc.vn/files/banners/2021/oct-21/unilever-big-c-cover-blog.jpg",
@@ -55,7 +64,11 @@ class DashboardController extends Controller
         return response($banners, 200);
     }
 
-    public function getCategoryHome() {
+    /**
+     * Get categories in home page it will be change to database storage
+     */
+    public function getCategoryHome()
+    {
         //$path = config('app.url');
         $categories = collect([
             [
@@ -71,6 +84,6 @@ class DashboardController extends Controller
                 'name' => 'Nước lau sàn'
             ]
         ]);
-        return response($categories,200);
+        return response($categories, 200);
     }
 }

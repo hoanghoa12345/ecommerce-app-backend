@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -17,6 +18,10 @@ class ProductController extends Controller
     {
         return Product::with(['category'])->latest()->get();
     }
+
+    /**
+     * Get list top product
+     */
 
     public function getTop()
     {
@@ -75,16 +80,16 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
-        $request->validate([
-            'name' => 'required',
-            'category_id' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'quantity' => 'required',
-            'image' => 'required'
-        ]);
+        //        $request->validate([
+        //            'name' => 'required',
+        //            'category_id' => 'required',
+        //            'description' => 'required',
+        //            'price' => 'required',
+        //            'quantity' => 'required',
+        //            'image' => 'required'
+        //        ]);
 
         $updateProduct = Product::find($product->id);
         $updateProduct->name = $request->name;
@@ -93,7 +98,7 @@ class ProductController extends Controller
         $updateProduct->price = $request->price;
         $updateProduct->quantity = $request->quantity;
         $updateProduct->slug = Str::slug($request->name);
-        if($request->hasFile('image')){
+        if ($request->hasFile('image')) {
             $path = $request->image->store('upload');
             $updateProduct->image = $path;
         }
@@ -111,9 +116,15 @@ class ProductController extends Controller
         return Product::destroy($product->id);
     }
 
+
+    /**
+     * Search product by name.
+     * @param \Iluminate\Http\Request
+     * @return \Illuminate\Http\Response
+     */
     public function search(Request $request)
     {
         $name = $request->query('q');
-        return Product::where('name', 'like', '%'.$name.'%')->get();
+        return Product::where('name', 'like', '%' . $name . '%')->get();
     }
 }

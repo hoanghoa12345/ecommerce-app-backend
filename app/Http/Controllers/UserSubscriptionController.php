@@ -7,6 +7,7 @@ use App\Models\Profile;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Models\UserSubscription;
+use App\Services\ZaloPayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -37,10 +38,20 @@ class UserSubscriptionController extends Controller
             'payment_status' => 'required',
             'delivery_schedule' => 'required',
         ]);
+
+        $userId = auth()->user()->id;
+        $subscriptionId = $request->subscription_id;
+        $status = 'active';
+        $paymentStatus = 'Chưa thanh toán';
+
+        // Find all user subscription by id is not payment
+        UserSubscription::where('subscription_id', $subscriptionId)->where('user_id', $userId)->where('payment_status', $paymentStatus)->delete();
+
+        // Handle create new subscription
         $userSubscription = new UserSubscription();
-        $userSubscription->user_id = auth()->user()->id;
-        $userSubscription->subscription_id = $request->subscription_id;
-        $userSubscription->status = 'active';
+        $userSubscription->user_id = $userId;
+        $userSubscription->subscription_id = $subscriptionId;
+        $userSubscription->status = $status;
         $userSubscription->start_date = $request->start_date;
         $userSubscription->end_date = $request->end_date;
         $userSubscription->payment_status = $request->payment_status;
@@ -52,7 +63,7 @@ class UserSubscriptionController extends Controller
             $subscription = Subscription::find($userSubscription->subscription_id);
 
             Mail::to($user)->send(new SubscribeMail($user, $profile, $userSubscription, $subscription));
-            return response(['message' => 'Save subscription success','sub_id' => $userSubscription->id], 201);
+            return response(['message' => 'Save subscription success', 'sub_id' => $userSubscription->id], 201);
         }
 
         return response(['message' => 'Failed to save subscription'], 500);
@@ -109,128 +120,48 @@ class UserSubscriptionController extends Controller
         return UserSubscription::where('user_id', $id)->with('subscription')->latest()->get();
     }
 
-    public function updatePaymentStatus(Request $request) {
+    public function updatePaymentStatus(Request $request)
+    {
         $request->validate([
-           'sub_id' => 'required',
-           'sub_pay_status' => 'required'
+            'sub_id' => 'required',
+            'sub_pay_status' => 'required'
         ]);
         $subId = $request->input('sub_id');
         $subItem = UserSubscription::find($subId);
         $subItem->payment_status = $request->input('sub_pay_status');
         $saveSub = $subItem->save();
-        if($saveSub) return response(['message' => 'Update subscription payment success!']);
+        if ($saveSub) return response(['message' => 'Update subscription payment success!']);
         return response(['message' => 'Update subscription payment failed']);
     }
 
-    public function  zalopayBankList()
+    public function zalopayBankList(ZaloPayService $service)
     {
-        /**
-         * Get all banks list
-         */
-        $config = [
-            "appid" => 2553,
-            "key1" => "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
-            "key2" => "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
-            "endpoint" => "https://sbgateway.zalopay.vn/api/getlistmerchantbanks"
-        ];
-
-        $reqtime = round(microtime(true) * 1000); // miliseconds
-        $params = [
-            "appid" => $config["appid"],
-            "reqtime" => $reqtime,
-            "mac" => hash_hmac("sha256", $config["appid"] . "|" . $reqtime, $config["key1"]) // appid|reqtime
-        ];
-
-        $resp = file_get_contents($config["endpoint"] . "?" . http_build_query($params));
-        $result = json_decode($resp, true);
-
-        return $result;
+        return $service->getBankList();
     }
 
-    public function zalopayPayment(Request $request)
+    public function zalopayPayment(Request $request, ZaloPayService $service)
     {
         $request->validate([
             'amount' => 'required|numeric'
         ]);
 
-        $config = [
-            "app_id" => 2553,
-            "key1" => "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
-            "key2" => "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
-            "endpoint" => "https://sb-openapi.zalopay.vn/v2/create"
-        ];
-        if($request->input('bank_code')) {
-            $embeddata = '{"redirecturl": "http://localhost:3000/payment-result"}';
-        }else {
-            $embeddata = '{"redirecturl": "http://localhost:3000/payment-result", "bankgroup": "ATM"}'; // Merchant's data
-        }
+        $amount = $request->input('amount');
+        $bankCode = $request->input('bank_code');
+        $redirectUrl = 'http://localhost:3000/payment-result';
+        $description = 'Eclean - Thanh toan cho don hang ';
+        $orderCode = '';
 
-        $items = '[]'; // Merchant's data
-        $transID = rand(0, 1000000); //Random trans id
-        $app_trans_id = date("ymd") . "_" . $transID;
-        $order = [
-            "app_id" => $config["app_id"],
-            "app_time" => round(microtime(true) * 1000), // miliseconds
-            "app_trans_id" => $app_trans_id,
-            "app_user" => "user123",
-            "item" => $items,
-            "embed_data" => $embeddata,
-            "amount" => $request->input('amount'),
-            "description" => "Lazada - Payment for the order #$transID",
-            "bank_code" => $request->input('bank_code'),
-        ];
-
-        // appid|app_trans_id|appuser|amount|apptime|embeddata|item
-        $data = $order["app_id"] . "|" . $order["app_trans_id"] . "|" . $order["app_user"] . "|" . $order["amount"]
-            . "|" . $order["app_time"] . "|" . $order["embed_data"] . "|" . $order["item"];
-        $order["mac"] = hash_hmac("sha256", $data, $config["key1"]);
-
-        $context = stream_context_create([
-            "http" => [
-                "header" => "Content-type: application/x-www-form-urlencoded\r\n",
-                "method" => "POST",
-                "content" => http_build_query($order)
-            ]
-        ]);
-
-        $resp = file_get_contents($config["endpoint"], false, $context);
-        $result = json_decode($resp, true);
-
-        return $result;
-
+        return $service->createPayment($amount, $bankCode, $redirectUrl, $description, $orderCode);
     }
 
-    public function zalopayStatusPayment(Request $request)
+    public function zalopayStatusPayment(Request $request, ZaloPayService $service)
     {
-        $config = [
-            "app_id" => 2553,
-            "key1" => "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
-            "key2" => "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
-            "endpoint" => "https://sb-openapi.zalopay.vn/v2/query"
-        ];
-
         $app_trans_id = $request->query('app_trans_id');  // Input your app_trans_id
-        if(!$app_trans_id) return response([
+
+        if (!$app_trans_id) return response([
             'message' => 'app_trans_id query params is required'
-        ],422);
-        $data = $config["app_id"] . "|" . $app_trans_id . "|" . $config["key1"]; // app_id|app_trans_id|key1
-        $params = [
-            "app_id" => $config["app_id"],
-            "app_trans_id" => $app_trans_id,
-            "mac" => hash_hmac("sha256", $data, $config["key1"])
-        ];
+        ], 422);
 
-        $context = stream_context_create([
-            "http" => [
-                "header" => "Content-type: application/x-www-form-urlencoded\r\n",
-                "method" => "POST",
-                "content" => http_build_query($params)
-            ]
-        ]);
-
-        $resp = file_get_contents($config["endpoint"], false, $context);
-        $result = json_decode($resp, true);
-
-        return $result;
+        return $service->getStatusPayment($app_trans_id);
     }
 }
