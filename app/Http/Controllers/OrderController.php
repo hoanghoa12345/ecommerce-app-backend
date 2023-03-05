@@ -12,6 +12,9 @@ use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
+    /**
+     * Save new orders to database
+     */
     public function save(Request $request)
     {
         $order = Order::create([
@@ -44,6 +47,9 @@ class OrderController extends Controller
         ], 201);
     }
 
+    /**
+     * Listing all orders
+     */
     public function list()
     {
         return Order::with(['details' => function ($query) {
@@ -51,11 +57,14 @@ class OrderController extends Controller
         }, 'user'])->latest()->get();
     }
 
+    /**
+     * Remove order with ID
+     */
     public function destroy($id)
     {
         $order_details = OrderDetail::select()
             ->where('order_id', $id)->get();
-        if(count($order_details) > 0){
+        if (count($order_details) > 0) {
             //Get only id
             $order_details_id = $order_details->pluck('id');
             $delete_detail = OrderDetail::destroy($order_details_id);
@@ -70,13 +79,16 @@ class OrderController extends Controller
         }
     }
 
+    /**
+     * Update the status of specific order using ID
+     */
     public function update($id, Request $request)
     {
         $order = Order::find($id);
         $order->status = $request->input('status');
         $order->save();
-        logger('id: '.$id,['Order']);
-        logger('status input: '.$request->input('status'), ['Order']);
-        return response(['message' => 'Update status order to ' . $order->status . ' successful!'],200);
+        logger('id: ' . $id, ['Order']);
+        logger('status input: ' . $request->input('status'), ['Order']);
+        return response(['message' => 'Update status order to ' . $order->status . ' successful!'], 200);
     }
 }

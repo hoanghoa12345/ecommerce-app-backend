@@ -43,6 +43,9 @@ class SubscriptionController extends Controller
         ];
     }
 
+    /**
+     * Store subscription to database
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -61,6 +64,9 @@ class SubscriptionController extends Controller
         return response(['message' => 'Failed to save subscription'], 500);
     }
 
+    /**
+     * Get subscription by id
+     */
     public function show(Subscription $subscription)
     {
         return Subscription::with(['details' => function ($query) {
@@ -68,6 +74,9 @@ class SubscriptionController extends Controller
         }])->findOrFail($subscription->id);
     }
 
+    /**
+     * Update subscription by id
+     */
     public function update(Request $request, Subscription $subscription)
     {
         $request->validate([
@@ -89,6 +98,9 @@ class SubscriptionController extends Controller
         ]);
     }
 
+    /**
+     * Remove subscription by id
+     */
     public function destroy(Subscription $subscription)
     {
         if (SubscriptionDetail::where('subscription_id', '=', $subscription->id)->count() > 0) {
@@ -98,11 +110,23 @@ class SubscriptionController extends Controller
         return Subscription::destroy($subscription->id);
     }
 
+    /**
+     * Get all subscription by user
+     * 
+     * @param $id
+     * @return array
+     */
     public function getSubsByUserId($id)
     {
         return Subscription::where('user_id', $id)->latest()->get();
     }
 
+    /**
+     * Clone supscription to new user
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function copySubscription(Request $request)
     {
         $user_id = $request->input('user_id');

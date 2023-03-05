@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class ProfileController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the user profile.
      *
      * @return \Illuminate\Http\Response
      */
@@ -17,24 +17,25 @@ class ProfileController extends Controller
         $profiles = Profile::all();
         return $profiles;
     }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
 
     /**
-     * Display the specified resource.
+     * Display the specified user profile.
      *
      * @param  int  $user_id
      * @return \Illuminate\Http\Response
      */
     public function show($user_id)
     {
-        $profile = Profile::where('user_id',$user_id)->first();
+        $profile = Profile::where('user_id', $user_id)->first();
         return $profile;
     }
+
+    /**
+     * Store a newly created user profile in database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -48,10 +49,10 @@ class ProfileController extends Controller
         $path = $request->avatar->store('upload/avatar');
         $profile->avatar = $path;
 
-        return Response($profile,201);
+        return Response($profile, 201);
     }
     /**
-     * Update the specified resource in storage.
+     * Update the specified profile in database.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $user_id
@@ -70,7 +71,7 @@ class ProfileController extends Controller
         $profile->description = $request->description;
         $profile->address = $request->address;
         $profile->phone_number = $request->phone_number;
-        if ($request->avatar !== 'undefined'){
+        if ($request->avatar !== 'undefined') {
             $profile->avatar = $request->avatar->store('upload/avatar');
         }
         return $profile->save();
