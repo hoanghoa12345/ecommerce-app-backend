@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Log;
 
 class SubscriptionDetailController extends Controller
 {
+    /**
+     * Store user subscription to database
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -21,6 +24,9 @@ class SubscriptionDetailController extends Controller
         return SubscriptionDetail::create($request->all());
     }
 
+    /**
+     * Insert all item to User Subscription
+     */
     public function bulkInsert(Request $request)
     {
         Log::info('================ Insert list detail subscription ===================');
@@ -45,6 +51,9 @@ class SubscriptionDetailController extends Controller
         ], 201);
     }
 
+    /**
+     * Update User Subscription by ID
+     */
     public function update(Request $request, SubscriptionDetail $subscriptionDetail)
     {
         $subscriptionDetail = Subscription::find($subscriptionDetail);
@@ -52,15 +61,49 @@ class SubscriptionDetailController extends Controller
         return $subscriptionDetail;
     }
 
+    /**
+     * Remove user subscription by ID
+     */
     public function destroy($id): int
     {
         return SubscriptionDetail::destroy($id);
     }
 
+    /**
+     * Update list products of subscription by ID
+     */
     public function updateList(Request $request, $subscriptionId)
     {
-        //$subscriptionDetailsCount = SubscriptionDetail::where('subscription_id',$subscriptionId)->count();
-        //$deleted = DB::table('subscription_details')->where('subscription_id', $subscriptionId)->delete();
-        //Deleted id always return num of record deleted
+        Log::info('Update list user subscription by subscription Id');
+        Log::info('Subscription Id: ', $subscriptionId);
+        Log::info('Request: ', [$request]);
+
+        if (!isset($subscriptionId)) {
+            return response([
+                'message' => 'Subscription Id params not exist',
+                'error_code' => 1,
+                'status' => 1,
+            ], 200);
+        }
+
+        SubscriptionDetail::where('subscription_id', $subscriptionId)->delete();
+
+        $listProduct = $request->listProduct;
+
+        $totalPrice = 0;
+        foreach ($listProduct as $item) {
+            $totalPrice += $item['quantity'] * $item['price'];
+            SubscriptionDetail::create($item);
+        }
+
+        $subscription = Subscription::find($subscriptionId);
+        $subscription->total_price = $totalPrice;
+        $subscription->save();
+
+        return response([
+            'message' => 'Updated list',
+            'error_code' => 0,
+            'status' => 1
+        ], 200);
     }
 }

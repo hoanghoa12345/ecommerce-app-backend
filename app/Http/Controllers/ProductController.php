@@ -45,16 +45,8 @@ class ProductController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'category_id' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'quantity' => 'required',
-            'image' => 'required'
-        ]);
         $path = $request->image->store('upload');
         $product = new Product($request->all());
         $product->slug = Str::slug($product->name);
@@ -82,15 +74,6 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
-        //        $request->validate([
-        //            'name' => 'required',
-        //            'category_id' => 'required',
-        //            'description' => 'required',
-        //            'price' => 'required',
-        //            'quantity' => 'required',
-        //            'image' => 'required'
-        //        ]);
-
         $updateProduct = Product::find($product->id);
         $updateProduct->name = $request->name;
         $updateProduct->category_id = $request->category_id;

@@ -115,11 +115,17 @@ class UserSubscriptionController extends Controller
         }
     }
 
+    /**
+     * Get subscription created by user
+     */
     public function getUserSubsByUserId($id)
     {
         return UserSubscription::where('user_id', $id)->with('subscription')->latest()->get();
     }
 
+    /**
+     * Update payment status for user subscription paid
+     */
     public function updatePaymentStatus(Request $request)
     {
         $request->validate([
@@ -134,11 +140,17 @@ class UserSubscriptionController extends Controller
         return response(['message' => 'Update subscription payment failed']);
     }
 
+    /**
+     * Get Zalo Pay bank list
+     */
     public function zalopayBankList(ZaloPayService $service)
     {
         return $service->getBankList();
     }
 
+    /**
+     * Create payment request using ZaloPay Service
+     */
     public function zalopayPayment(Request $request, ZaloPayService $service)
     {
         $request->validate([
@@ -147,13 +159,16 @@ class UserSubscriptionController extends Controller
 
         $amount = $request->input('amount');
         $bankCode = $request->input('bank_code');
-        $redirectUrl = 'http://localhost:3000/payment-result';
-        $description = 'Eclean - Thanh toan cho don hang ';
-        $orderCode = '';
+        $redirectUrl = 'http://localhost:3000/payment-result'; //This will be redirect to frontend if payment done
+        $description = 'Eclean - Thanh toan cho don hang '; // Title of order payment
+        $orderCode = ''; // Order code of subscription will be update late
 
         return $service->createPayment($amount, $bankCode, $redirectUrl, $description, $orderCode);
     }
 
+    /**
+     * Update status of order created by ZaloPay
+     */
     public function zalopayStatusPayment(Request $request, ZaloPayService $service)
     {
         $app_trans_id = $request->query('app_trans_id');  // Input your app_trans_id
